@@ -34,7 +34,7 @@ export interface Processing {
   invert: boolean;
   lowCut: boolean;
   lowCutHz: number;
-  gate: Dynamics;
+  gate: Dynamics & { accent: number; hardGate: boolean; keySolo: boolean };
   compressor: Dynamics;
   eqEnabled: boolean;
   bands: EqBand[];

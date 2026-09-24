@@ -20,3 +20,7 @@ Eleven state tests and four browser tests validate unity/enabled group and FX de
 ## Corrected DCA mute indication
 
 Twelve state tests and four browser tests validate DCA glow on associated channels/buses, no channel indication from bus mute, direct mute precedence and persistence, reduced motion, and unchanged Sunday send defaults. Earlier bus-mute visual behavior has been replaced.
+
+## Recorded gate layout update
+
+Fourteen unit/state tests and five Chromium browser tests pass. New checks cover bounded expansion, hard-gate behavior, zero range, graph/slider synchronization and channel-specific retention. Existing console, DCA mute and Sunday-send checks still pass. Gate screenshot reviewed against the supplied recording. Production build and self-contained HTML export pass.

@@ -41,6 +41,9 @@ export function defaultProcessing(): Processing {
     lowCut: false,
     lowCutHz: 125.3,
     gate: {
+      accent: 0,
+      hardGate: false,
+      keySolo: false,
       enabled: false,
       threshold: -69.5,
       ratio: 3,

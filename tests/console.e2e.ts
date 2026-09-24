@@ -207,3 +207,55 @@ test("Sunday group and FX send defaults are visible at unity", async ({
     page.getByRole("slider", { name: "Send 1", exact: true }),
   ).toHaveAttribute("aria-valuetext", "-12.9 dB");
 });
+
+test("recorded gate controls and graph handles stay synchronized per channel", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "EQ 1", exact: true }).click();
+  await page.getByRole("button", { name: "GATE", exact: true }).click();
+  const threshold = page.getByRole("slider", {
+    name: "Threshold",
+    exact: true,
+  });
+  await threshold.fill("-34");
+  await page.getByRole("slider", { name: "Range", exact: true }).fill("14.5");
+  const curve = page.getByTestId("gate-curve");
+  const before = await curve.getAttribute("d");
+  await page.getByRole("slider", { name: "Ratio", exact: true }).fill("7");
+  expect(await curve.getAttribute("d")).not.toBe(before);
+  const handle = page.getByLabel("Drag gate threshold");
+  const box = (await handle.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 - 35, {
+    steps: 5,
+  });
+  await page.mouse.up();
+  const changedThreshold = await threshold.inputValue();
+  expect(Number(changedThreshold)).toBeGreaterThan(-34);
+  const attack = page.getByRole("slider", { name: "Attack", exact: true });
+  const attackHandle = (await page
+    .getByLabel("Drag attack", { exact: true })
+    .boundingBox())!;
+  await page.mouse.move(
+    attackHandle.x + attackHandle.width / 2,
+    attackHandle.y + attackHandle.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    attackHandle.x - 30,
+    attackHandle.y + attackHandle.height / 2,
+    { steps: 5 },
+  );
+  await page.mouse.up();
+  expect(Number(await attack.inputValue())).toBeGreaterThan(10);
+  await page
+    .getByRole("button", { name: "Select 2 VOX 2", exact: true })
+    .click();
+  await expect(threshold).toHaveValue("-69.5");
+  await page
+    .getByRole("button", { name: "Select 1 VOX 1", exact: true })
+    .click();
+  await expect(threshold).toHaveValue(changedThreshold);
+});

@@ -32,3 +32,9 @@ The UI indication does not rewrite channel/bus mute state, faders or sends. Futu
 ## Sunday send defaults
 
 User-confirmed: VOX channels CH1–4 feed VOX, VOX VERB and VOX DLY at 0 dB with sends enabled. GTRS CH8–12 feed GTRS; KEYS CH13–16 feed KEYS; DRUM CH18–27 feed DRUM, DRUM CRUSH and DRUM VERB at 0 dB with sends enabled. Unassociated sends remain off. IEM1–8 defaults are unchanged. Reset restores these values. Bus master and source channel faders are unchanged. FX sends do not introduce mute-light propagation.
+
+## Gate/Expander recording
+
+Reviewed the user's 54-second Gate:Expander.mov recording. The dedicated gate view now follows its model/accent/key header, blue transfer graph, threshold drag handle, green envelope and two rows of colored controls. Threshold, ratio (including hard gate) and range jointly affect the expansion curve. Attack, hold and release can be changed by sliders or graph handles; all gate settings remain channel-specific. Accent and key solo retain UI state only. No audio metering is simulated.
+
+The recording demonstrates 1:1.5, 1:2, 1:4 and gate ratios; existing 1:3 settings are preserved. Additional ratio stops and control endpoints are provisional. Envelope geometry is an illustrative logarithmic display, not measured firmware scaling. The model selector, key-source menu and key-filter detail were not demonstrated, so their labels remain fixed to Gate/Expander, Self and Flat. Initial processing values are retained rather than adopting demonstration values as Sunday defaults.
