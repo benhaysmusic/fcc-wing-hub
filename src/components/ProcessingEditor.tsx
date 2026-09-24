@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { byId } from "../mixer/config";
+import { byId, dcaDisplayMembers } from "../mixer/config";
 import { dispatch } from "../mixer/store";
-import { effectiveDb, effectiveMute, formatDb } from "../mixer/state";
+import { dcaMuteSources, formatDb } from "../mixer/state";
 import type { MixerState, Processing } from "../mixer/types";
 function Parameter({
   label,
@@ -54,11 +54,18 @@ export function ProcessingEditor({ state }: { state: MixerState }) {
         <p>Control group</p>
         <div className="member-cards">
           {c.members?.length ? (
-            c.members.map((id) => (
+            dcaDisplayMembers(c).map((id) => (
               <button key={id} onClick={() => dispatch({ type: "select", id })}>
                 <b style={{ color: byId[id].color }}>{byId[id].name}</b>
-                <span>{formatDb(effectiveDb(state, id))} dB</span>
-                <small>{effectiveMute(state, id) ? "MUTED" : "ACTIVE"}</small>
+                <span>
+                  {byId[id].number} · Fader {formatDb(state.strips[id].faderDb)}{" "}
+                  dB
+                </span>
+                <small>
+                  {state.strips[id].muted || dcaMuteSources(state, id).length
+                    ? "MUTED"
+                    : "ACTIVE"}
+                </small>
               </button>
             ))
           ) : (

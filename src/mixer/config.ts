@@ -187,11 +187,21 @@ export const dcas: StripConfig[] = Array.from({ length: 16 }, (_, i) => ({
   name: ["VOX", "GTRS", "KEYS", "DRUMS", "JUSTIN", "PC"][i] || "",
   kind: "dca",
   source: "CONTROL GROUP",
-  color: "#62676b",
+  color:
+    [...buses, ...inputs, ...auxes].find((s) => s.id === memberships[i]?.[0])
+      ?.color ?? "#62676b",
   initialDb: [0, 0, -5.6, -5.1, -0.6, -6.6][i] ?? -90,
   members: memberships[i] || [],
   muted: i === 0 || i === 4,
 }));
+// Display the full association without changing direct DCA control membership.
+export function dcaDisplayMembers(dca: StripConfig): string[] {
+  return [
+    ...new Set(
+      (dca.members ?? []).flatMap((id) => [id, ...(groupBusMembers[id] ?? [])]),
+    ),
+  ];
+}
 export const main: StripConfig = {
   id: "main",
   number: "M1",

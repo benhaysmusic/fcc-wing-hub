@@ -1,4 +1,4 @@
-import { byId } from "../mixer/config";
+import { byId, dcaDisplayMembers } from "../mixer/config";
 import { dispatch } from "../mixer/store";
 import type { MixerState, StripConfig } from "../mixer/types";
 export function MixOverview({
@@ -23,12 +23,16 @@ export function MixOverview({
             key={c.id}
           >
             {c.kind === "dca" ? (
-              <div className="dca-members">
+              <div
+                className="dca-members"
+                aria-label={`${c.name || c.number} members`}
+              >
                 <span>MEMBERS</span>
                 {c.members?.length ? (
-                  c.members.map((id) => (
+                  dcaDisplayMembers(c).map((id) => (
                     <button
                       key={id}
+                      title={`${byId[id].number} ${byId[id].name}`}
                       style={{ borderColor: byId[id].color }}
                       onClick={() => dispatch({ type: "select", id })}
                     >
