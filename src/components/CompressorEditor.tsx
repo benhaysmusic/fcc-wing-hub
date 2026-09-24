@@ -1,25 +1,24 @@
 import { DynamicsControl } from "./DynamicsControl";
 import type { PointerEvent } from "react";
 import type { Processing } from "../mixer/types";
-import { gateOutput } from "../mixer/gate";
-type Gate = Processing["gate"];
-const ratios = [1, 1.5, 2, 3, 4, 8, 20];
+import { compressorOutput } from "../mixer/compressor";
+type Compressor = Processing["compressor"];
 const clamp = (n: number, lo: number, hi: number) =>
   Math.max(lo, Math.min(hi, n));
-export function GateEditor({
-  gate: g,
+export function CompressorEditor({
+  compressor: g,
   onChange,
 }: {
-  gate: Gate;
-  onChange: (gate: Gate) => void;
+  compressor: Compressor;
+  onChange: (compressor: Compressor) => void;
 }) {
-  const set = (patch: Partial<Gate>) => onChange({ ...g, ...patch });
-  const tx = (db: number) => 42 + ((db + 90) / 90) * 330;
-  const ty = (db: number) => 12 - (db / 90) * 258;
+  const set = (patch: Partial<Compressor>) => onChange({ ...g, ...patch });
+  const tx = (db: number) => 42 + ((db + 60) / 60) * 330;
+  const ty = (db: number) => 12 - (db / 60) * 258;
   const thresholdY = ty(g.threshold);
-  const curve = Array.from({ length: 361 }, (_, i) => {
-    const input = -90 + i / 4;
-    return `${i ? "L" : "M"}${tx(input)},${ty(gateOutput(input, g.threshold, g.ratio, g.range, g.hardGate))}`;
+  const curve = Array.from({ length: 241 }, (_, i) => {
+    const input = -60 + i / 4;
+    return `${i ? "L" : "M"}${tx(input)},${ty(compressorOutput(input, g.threshold, g.ratio, g.knee))}`;
   }).join(" ");
   const attackX = 190 - (Math.log1p(g.attack) / Math.log1p(200)) * 160;
   const holdX = 190 + (Math.log1p(g.hold) / Math.log1p(1000)) * 135;
@@ -39,8 +38,8 @@ export function GateEditor({
         threshold:
           Math.round(
             clamp(
-              (-(((e.clientY - box.top) / box.height) * 282 - 12) / 258) * 90,
-              -90,
+              (-(((e.clientY - box.top) / box.height) * 282 - 12) / 258) * 60,
+              -60,
               0,
             ) * 2,
           ) / 2,
@@ -76,10 +75,10 @@ export function GateEditor({
     />
   );
   return (
-    <div className="gate-editor">
+    <div className="gate-editor compressor-editor">
       <div className="gate-toolbar">
         <button
-          aria-label="Gate enabled"
+          aria-label="Compressor enabled"
           aria-pressed={g.enabled}
           className={g.enabled ? "gate-on" : ""}
           onClick={() => set({ enabled: !g.enabled })}
@@ -87,27 +86,35 @@ export function GateEditor({
           {g.enabled ? "ON" : "OFF"}
         </button>
         <div className="gate-model">
-          <small>GATE MODEL</small>
-          <span>GATE/EXPANDER</span>
+          <small>DYNAMICS MODEL</small>
+          <span>WING COMPRESSOR</span>
+        </div>
+        <div className="compressor-mix">
+          <span>
+            MIX <b>100 %</b>
+          </span>
+          <i />
         </div>
         <DynamicsControl
-          label="Accent"
-          value={g.accent}
+          label="Makeup"
+          caption="GAIN"
+          value={g.makeup}
           min={0}
-          max={100}
-          text={`${g.accent} %`}
-          onChange={(accent) => set({ accent })}
+          max={24}
+          step={0.5}
+          text={`${g.makeup.toFixed(1)} dB`}
+          onChange={(makeup) => set({ makeup })}
         />
         <div className="gate-key">
           <small>KEY SOURCE</small>
           <span>SELF</span>
         </div>
-        <button
-          aria-pressed={g.keySolo}
-          onClick={() => set({ keySolo: !g.keySolo })}
-        >
-          KEY SOLO
-        </button>
+        <span className="compressor-fixed">SOLO</span>
+        <div className="gate-filter">
+          <small>XOVER MODE</small>
+          <span>FLAT</span>
+        </div>
+        <span className="compressor-fixed">SOLO</span>
         <div className="gate-filter">
           <small>KEY FILTER</small>
           <span>FLAT</span>
@@ -118,18 +125,18 @@ export function GateEditor({
           <svg
             viewBox="0 0 420 282"
             preserveAspectRatio="none"
-            aria-label="Gate expansion curve"
+            aria-label="Compressor transfer curve"
           >
             <defs>
               <pattern
-                id="gate-dots"
+                id="compressor-dots"
                 width="20"
                 height="20"
                 patternUnits="userSpaceOnUse"
               >
                 <circle cx="1" cy="1" r=".7" fill="#3c3c3c" />
               </pattern>
-              <clipPath id="gate-clip">
+              <clipPath id="compressor-clip">
                 <rect x="40" y="10" width="338" height="260" />
               </clipPath>
             </defs>
@@ -138,9 +145,9 @@ export function GateEditor({
               y="10"
               width="338"
               height="260"
-              fill="url(#gate-dots)"
+              fill="url(#compressor-dots)"
             />
-            {Array.from({ length: 9 }, (_, i) => (
+            {Array.from({ length: 7 }, (_, i) => (
               <g key={i}>
                 <text x="29" y={ty(-i * 10) + 3} textAnchor="end">
                   {i === 0 ? "0" : -i * 10}
@@ -152,9 +159,9 @@ export function GateEditor({
               </g>
             ))}
             <path
-              data-testid="gate-curve"
+              data-testid="compressor-curve"
               d={curve}
-              clipPath="url(#gate-clip)"
+              clipPath="url(#compressor-clip)"
               fill="none"
               stroke="#7d8ddb"
               strokeWidth="2.5"
@@ -162,7 +169,7 @@ export function GateEditor({
             <path d={`M40 ${thresholdY}H406`} stroke="#888" strokeWidth="2" />
             <g
               className="gate-threshold-handle"
-              aria-label="Drag gate threshold"
+              aria-label="Drag compressor threshold"
               onPointerDown={(e) => drag(e, "threshold")}
               onPointerMove={(e) => drag(e, "threshold")}
             >
@@ -176,14 +183,24 @@ export function GateEditor({
           </svg>
         </div>
         <div className="gate-right">
-          <h3>ENVELOPE</h3>
+          <div className="compressor-envelope-options">
+            <span>DETECTOR</span>
+            <span>PEAK</span>
+            <b>RMS</b>
+            <span>ENVELOPE</span>
+            <span>LIN</span>
+            <b>LOG</b>
+            <span>AUTO ENV</span>
+            <b>OFF</b>
+            <span>ON</span>
+          </div>
           <svg
             className="gate-envelope"
             viewBox="0 0 500 160"
             preserveAspectRatio="none"
-            aria-label="Gate envelope"
+            aria-label="Compressor envelope"
           >
-            <rect width="500" height="160" fill="url(#gate-dots)" />
+            <rect width="500" height="160" fill="url(#compressor-dots)" />
             <path
               d={`M190 0V160 M${holdX} 0V160`}
               stroke="#555"
@@ -218,7 +235,7 @@ export function GateEditor({
               label="Threshold"
               caption="THR"
               value={g.threshold}
-              min={-90}
+              min={-60}
               max={0}
               step={0.5}
               text={`${g.threshold.toFixed(1)} dB`}
@@ -226,31 +243,22 @@ export function GateEditor({
             />
             <DynamicsControl
               label="Ratio"
-              value={
-                g.hardGate
-                  ? ratios.length
-                  : Math.max(0, ratios.indexOf(g.ratio))
-              }
-              min={0}
-              max={ratios.length}
-              text={g.hardGate ? "gate" : `1:${g.ratio}`}
+              value={g.ratio}
+              min={1}
+              max={20}
+              step={0.1}
+              text={`${g.ratio}:1`}
               color="#e0cb58"
-              onChange={(i) =>
-                set({
-                  hardGate: i === ratios.length,
-                  ratio: ratios[Math.min(i, ratios.length - 1)],
-                })
-              }
+              onChange={(ratio) => set({ ratio })}
             />
             <DynamicsControl
-              label="Range"
-              value={g.range}
+              label="Knee"
+              value={g.knee}
               min={0}
-              max={80}
-              step={0.5}
-              text={`${g.range.toFixed(1)} dB`}
-              color="#7d8ddb"
-              onChange={(range) => set({ range })}
+              max={5}
+              text={`${g.knee}`}
+              color="#e0cb58"
+              onChange={(knee) => set({ knee })}
             />
           </div>
         </div>

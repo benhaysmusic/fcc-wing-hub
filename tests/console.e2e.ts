@@ -490,3 +490,94 @@ test("EQ editing shows hills and valleys even when bypassed", async ({
   await enabled.click();
   await expect(response).toHaveAttribute("d", combined!);
 });
+
+test("recorded compressor curve and envelope follow channel controls", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "EQ 1", exact: true }).click();
+  await page.getByRole("button", { name: "COMP", exact: true }).click();
+  const curve = page.getByTestId("compressor-curve");
+  const before = await curve.getAttribute("d");
+  await page
+    .getByRole("slider", { name: "Threshold", exact: true })
+    .fill("-35.5");
+  await page.getByRole("slider", { name: "Ratio", exact: true }).fill("1.5");
+  expect(await curve.getAttribute("d")).not.toBe(before);
+  const soft = await curve.getAttribute("d");
+  await page.getByRole("slider", { name: "Knee", exact: true }).fill("0");
+  expect(await curve.getAttribute("d")).not.toBe(soft);
+  await page.getByRole("slider", { name: "Hold", exact: true }).fill("120");
+  await page.getByRole("slider", { name: "Release", exact: true }).fill("111");
+  await page.getByRole("slider", { name: "Makeup", exact: true }).fill("5.5");
+  const handle = (await page
+    .getByLabel("Drag compressor threshold")
+    .boundingBox())!;
+  await page.mouse.move(
+    handle.x + handle.width / 2,
+    handle.y + handle.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    handle.x + handle.width / 2,
+    handle.y + handle.height / 2 - 30,
+    { steps: 5 },
+  );
+  await page.mouse.up();
+  const threshold = await page
+    .getByRole("slider", { name: "Threshold", exact: true })
+    .inputValue();
+  expect(Number(threshold)).toBeGreaterThan(-35.5);
+  const attackHandle = (await page
+    .getByLabel("Drag attack", { exact: true })
+    .boundingBox())!;
+  await page.mouse.move(
+    attackHandle.x + attackHandle.width / 2,
+    attackHandle.y + attackHandle.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    attackHandle.x - 25,
+    attackHandle.y + attackHandle.height / 2,
+    { steps: 5 },
+  );
+  await page.mouse.up();
+  expect(
+    Number(
+      await page
+        .getByRole("slider", { name: "Attack", exact: true })
+        .inputValue(),
+    ),
+  ).toBeGreaterThan(20);
+  await page
+    .getByRole("button", { name: "Select 2 VOX 2", exact: true })
+    .click();
+  await expect(
+    page.getByRole("slider", { name: "Makeup", exact: true }),
+  ).toHaveValue("0");
+  await page
+    .getByRole("button", { name: "Select 1 VOX 1", exact: true })
+    .click();
+  await expect(
+    page.getByRole("slider", { name: "Makeup", exact: true }),
+  ).toHaveValue("5.5");
+  await expect(
+    page.getByRole("slider", { name: "Threshold", exact: true }),
+  ).toHaveValue(threshold);
+  for (const width of [1440, 1280]) {
+    await page.setViewportSize({ width, height: width === 1440 ? 900 : 800 });
+    const panel = (await page.locator(".compressor-editor").boundingBox())!;
+    const end = (await page
+      .locator(".compressor-editor .gate-filter")
+      .last()
+      .boundingBox())!;
+    expect(end.x + end.width).toBeLessThanOrEqual(panel.x + panel.width + 1);
+    const knee = (await page
+      .getByRole("slider", { name: "Knee", exact: true })
+      .boundingBox())!;
+    expect(knee.y + knee.height).toBeLessThanOrEqual(panel.y + panel.height);
+    await page.screenshot({
+      path: `test-results/compressor-active-${width}.png`,
+    });
+  }
+});

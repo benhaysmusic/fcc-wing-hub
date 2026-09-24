@@ -1992,3 +1992,82 @@ button:disabled {
   pointer-events: none;
   z-index: 1;
 }
+
+.compressor-editor .gate-toolbar {
+  gap: 10px;
+}
+.compressor-editor .gate-model {
+  min-width: 150px;
+}
+.compressor-editor .gate-toolbar .gate-control {
+  width: 85px;
+}
+.compressor-editor .gate-toolbar .gate-control > span {
+  font-size: 10px;
+}
+.compressor-editor .gate-key {
+  margin-left: auto;
+}
+.compressor-fixed {
+  color: #777;
+  border: 1px solid #555;
+  padding: 5px;
+  font-size: 10px;
+}
+.compressor-mix {
+  width: 80px;
+  flex: none;
+  font-size: 10px;
+}
+.compressor-mix > span {
+  display: flex;
+  justify-content: space-between;
+}
+.compressor-mix b {
+  font-weight: 400;
+}
+.compressor-mix i {
+  display: block;
+  background: #eee;
+  height: 3px;
+  width: 100%;
+  margin-top: 7px;
+}
+.compressor-envelope-options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 4px;
+  border-bottom: 4px solid #080808;
+  background: #222;
+  white-space: nowrap;
+  font-size: 10px;
+  flex: none;
+}
+.compressor-envelope-options b {
+  background: #7181ce;
+  padding: 6px 4px;
+  font-weight: 400;
+  color: #161616;
+}
+@media (max-width: 1300px) {
+  .compressor-editor .gate-toolbar {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+  .compressor-editor .gate-model {
+    min-width: 130px;
+  }
+  .compressor-editor .gate-key,
+  .compressor-editor .gate-filter {
+    font-size: 10px;
+  }
+  .compressor-editor .gate-toolbar small {
+    font-size: 8px;
+  }
+  .compressor-envelope-options {
+    gap: 3px;
+    font-size: 9px;
+  }
+}

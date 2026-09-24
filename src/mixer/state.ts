@@ -59,6 +59,7 @@ export function defaultProcessing(): Processing {
       makeup: 0,
     },
     compressor: {
+      knee: 3,
       enabled: false,
       threshold: -18,
       ratio: 3,
