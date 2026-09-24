@@ -553,14 +553,15 @@ button:disabled {
   background: #1b1e20;
   color: #92999c;
 }
-.mute.active {
+.mute {
+  background: #000;
+  color: #c8c9ca;
+}
+.mute.active,
+.mute.inherited {
   background: #f14e5b;
   border-color: #ff6a74;
   color: #090a0b;
-}
-.mute.inherited {
-  border: 2px solid #f14e5b;
-  color: #ff6977;
 }
 .mute.bus-inherited {
   border-color: #f14e5b;
