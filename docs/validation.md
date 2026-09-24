@@ -13,10 +13,10 @@ The standalone offline HTML export was also opened and its Sends on Faders inter
 
 Repository: `benhaysmusic/fcc-wing-hub`. Milestone 1 is prepared on `codex/console-ui` for review; no deployment is configured.
 
-## Main group bus mute update
-
-Eight state tests and three browser tests cover the updated console, including independent local/bus mute state, group membership isolation, gently pulsing inherited bus mute, solid direct mute, bus release preserving direct mute, and the reduced-motion alternative. Bus mute indications do not change source fader levels or per-bus sends.
-
 ## Sunday send defaults update
 
 Eleven state tests and four browser tests validate unity/enabled group and FX defaults, reset restoration, unrelated sends remaining off, unchanged IEM1–8 defaults, and FX mute isolation.
+
+## Corrected DCA mute indication
+
+Twelve state tests and four browser tests validate DCA glow on associated channels/buses, no channel indication from bus mute, direct mute precedence and persistence, reduced motion, and unchanged Sunday send defaults. Earlier bus-mute visual behavior has been replaced.

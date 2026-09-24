@@ -145,9 +145,9 @@ export const buses: StripConfig[] = busNames.map((name, i) => ({
     0, 0, 0, 0, -9.5, -8.2, -90, -29.8, 0, -18.6, 0.1, 0, 0, -0.6, 0, 0,
   ][i],
 }));
-// Explicit UI mute associations, independent of per-bus send levels.
+// Fixed main-group channel associations, independent of per-bus send levels.
 // Full audio routing is a separate future concern.
-export const busMuteMembers: Record<string, readonly string[]> = {
+export const groupBusMembers: Record<string, readonly string[]> = {
   b1: ["ch1", "ch2", "ch3", "ch4"],
   b2: ["ch8", "ch9", "ch10", "ch11", "ch12"],
   b3: ["ch13", "ch14", "ch15", "ch16"],
@@ -164,14 +164,13 @@ export const busMuteMembers: Record<string, readonly string[]> = {
     "ch27",
   ],
 };
-// Sunday send defaults are separate from mute associations: FX membership
-// must never make an FX bus mute propagate to input-channel mute lights.
+// Sunday send defaults include FX without treating FX as main channel groups.
 export const unitySendMembers: Record<string, readonly string[]> = {
-  ...busMuteMembers,
-  b5: busMuteMembers.b4,
-  b6: busMuteMembers.b1,
-  b7: busMuteMembers.b1,
-  b8: busMuteMembers.b4,
+  ...groupBusMembers,
+  b5: groupBusMembers.b4,
+  b6: groupBusMembers.b1,
+  b7: groupBusMembers.b1,
+  b8: groupBusMembers.b4,
 };
 // Read-only membership transcribed from the DCA overview screenshot.
 const memberships = [

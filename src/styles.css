@@ -557,18 +557,17 @@ button:disabled {
   background: #000;
   color: #c8c9ca;
 }
-.mute.active,
-.mute.inherited {
+.mute.active {
   background: #f14e5b;
   border-color: #ff6a74;
   color: #090a0b;
 }
-.mute.bus-inherited {
+.mute.dca-inherited {
   border-color: #f14e5b;
   color: #fff0f1;
-  animation: bus-mute-pulse 2s ease-in-out infinite;
+  animation: dca-mute-pulse 2s ease-in-out infinite;
 }
-@keyframes bus-mute-pulse {
+@keyframes dca-mute-pulse {
   0%,
   100% {
     background-color: #522b32;
@@ -578,7 +577,7 @@ button:disabled {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mute.bus-inherited {
+  .mute.dca-inherited {
     animation: none;
     background: #522b32;
     border-style: dashed;

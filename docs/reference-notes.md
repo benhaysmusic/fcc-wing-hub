@@ -23,11 +23,11 @@ Unconfirmed details remain explicit: complete fixed input-to-bus routing, remain
 
 Original images are retained with the local task under work/reference; they are not embedded into the runtime application.
 
-## Main group bus mute indication
+## DCA mute indication (corrected workflow)
 
-User-requested behavior: a directly muted channel is solid red. A locally unmuted channel whose main group bus is directly muted gently pulses red; releasing the bus mute does not change the channel's own mute. FX and IEM bus mutes explicitly do not affect source channel mute lights.
+The user's correction supersedes the earlier bus-mute visual behavior. A direct channel or bus mute is solid red; a locally unmuted member glows/pulses red when its DCA is muted. DCA association includes its direct members and the channels in its main-group buses: VOX CH1–4; GTRS CH8–12; KEYS CH13–16; DRUM CH18–27. JUSTIN DCA controls CH7 and PC DCA controls A1. DCA1 also controls B6/B7, DCA4 also controls B5. Bus mute switches never propagate mute lights to input channels.
 
-The UI associations are VOX → CH1–4; GTRS → CH8–12; KEYS → CH13–16; DRUM → CH18–27. They are explicit in `busMuteMembers`, separate from send levels and future audio routing. HH1, HH2, JUSTIN, click/cues and AUX are not assigned to those groups. Existing DCA mute indications remain independent. Reduced-motion mode replaces the pulse with a dim red button and dashed border.
+The UI indication does not rewrite channel/bus mute state, faders or sends. Future audio must handle bus mute at the destination bus so that unrelated sends remain independent. Reduced motion uses a dim red button with dashed border instead of animation.
 
 ## Sunday send defaults
 

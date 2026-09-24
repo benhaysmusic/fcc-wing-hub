@@ -1,7 +1,7 @@
 import {
   auxes,
   buses,
-  busMuteMembers,
+  groupBusMembers,
   byId,
   dcas,
   iem1Levels,
@@ -125,11 +125,15 @@ export function effectiveMute(state: MixerState, id: string) {
     controllingDcas(id).some((d) => state.strips[d.id].muted)
   );
 }
-// This is a console indication, not a global audio-channel mute: muting a
-// destination bus must not silence unrelated sends (for example an IEM mix).
-export function busMuteSources(state: MixerState, id: string) {
-  return buses.filter(
-    (bus) => busMuteMembers[bus.id]?.includes(id) && state.strips[bus.id].muted,
+// DCA indication follows direct members and their associated main-group channels.
+// Bus mute switches never participate in this visual state. This does not
+// turn a destination-bus mute into a global source mute for the future engine.
+export function dcaMuteSources(state: MixerState, id: string) {
+  return dcas.filter(
+    (dca) =>
+      state.strips[dca.id].muted &&
+      (dca.members?.includes(id) ||
+        dca.members?.some((member) => groupBusMembers[member]?.includes(id))),
   );
 }
 export function effectiveDb(state: MixerState, id: string) {

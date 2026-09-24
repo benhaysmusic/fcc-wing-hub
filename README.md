@@ -70,6 +70,6 @@ The available screen area is used for the console rather than reproducing the re
 
 This repository is for FCC use. It has no deployment workflow or public hosting configuration.
 
-### Bus mute lights
+### Mute lights
 
-Muting a main group bus (VOX, GTRS, KEYS or DRUM) gently pulses its associated channels' mute buttons when those channels are not directly muted. Direct channel mute is always solid red and persists when the bus is unmuted. FX and IEM bus mutes do not change source-channel mute lights. Fader positions stay unchanged.
+Unmuted buttons are black. Direct mutes are solid red. Muting a DCA gently pulses the mute lights on its locally unmuted member buses and associated main-group channels. Direct channel or bus mutes remain solid and survive DCA unmute. Bus mute switches do not affect channel mute lights. Fader positions and Sunday send defaults stay unchanged.

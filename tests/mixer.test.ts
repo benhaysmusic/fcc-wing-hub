@@ -5,13 +5,13 @@ import {
   displayedDb,
   effectiveDb,
   effectiveMute,
-  busMuteSources,
+  dcaMuteSources,
   dbToPosition,
   positionToDb,
 } from "../src/mixer/state";
 import {
   layers,
-  busMuteMembers,
+  groupBusMembers,
   inputs,
   auxes,
   iem1Levels,
@@ -32,7 +32,9 @@ describe("FCC mixer invariants", () => {
     for (const bus of ["b5", "b6", "b7", "b8"])
       s = reducer(s, { type: "mute", id: bus });
     for (const channel of inputs)
-      expect(busMuteSources(s, channel.id)).toEqual([]);
+      expect(dcaMuteSources(s, channel.id)).toEqual(
+        dcaMuteSources(createInitialState(), channel.id),
+      );
   });
   it("starts main group sends at unity and restores them on reset", () => {
     let s = createInitialState();
@@ -66,32 +68,52 @@ describe("FCC mixer invariants", () => {
         });
     });
   });
-  it("indicates only the explicitly associated main-group channels", () => {
-    for (const [bus, members] of Object.entries(busMuteMembers)) {
-      const s = reducer(createInitialState(), { type: "mute", id: bus });
-      for (const channel of layers["CH 1–40"]) {
-        expect(
-          busMuteSources(s, channel.id).some((source) => source.id === bus),
-        ).toBe(members.includes(channel.id));
+  it("bus mute changes never change DCA indicators or channel state", () => {
+    let s = createInitialState();
+    const before = s;
+    for (let b = 1; b <= 16; b++) s = reducer(s, { type: "mute", id: `b${b}` });
+    for (const channel of [...inputs, ...auxes]) {
+      expect(dcaMuteSources(s, channel.id)).toEqual(
+        dcaMuteSources(before, channel.id),
+      );
+      expect(s.strips[channel.id]).toBe(before.strips[channel.id]);
+      expect(s.sends[channel.id]).toBe(before.sends[channel.id]);
+    }
+  });
+  it("DCA indicators reach member buses and associated channels only", () => {
+    let s = createInitialState();
+    s = reducer(s, { type: "mute", id: "d1" });
+    s = reducer(s, { type: "mute", id: "d5" });
+    for (const [dca, members] of [
+      ["d1", ["b1", "b6", "b7", "ch1", "ch2", "ch3", "ch4"]],
+      ["d2", ["b2", "ch8", "ch9", "ch10", "ch11", "ch12"]],
+      ["d3", ["b3", "ch13", "ch14", "ch15", "ch16"]],
+      ["d4", ["b4", "b5", ...groupBusMembers.b4]],
+      ["d5", ["ch7"]],
+      ["d6", ["a1"]],
+    ] as [string, string[]][]) {
+      const muted = reducer(s, { type: "mute", id: dca });
+      for (const id of Object.keys(s.strips)) {
+        expect(dcaMuteSources(muted, id).map((d) => d.id)).toEqual(
+          members.includes(id) ? [dca] : [],
+        );
       }
     }
   });
-  it("keeps bus mute indication independent of direct channel mute and fader levels", () => {
+  it("DCA release preserves direct mutes, levels and sends", () => {
     let s = createInitialState();
+    const before = s;
     s = reducer(s, { type: "mute", id: "ch1" });
-    const level = s.strips.ch1.faderDb;
-    const sends = s.sends.ch1;
-    s = reducer(s, { type: "mute", id: "b1" });
-    expect(busMuteSources(s, "ch1").map((bus) => bus.id)).toEqual(["b1"]);
-    expect(s.strips.ch1.muted).toBe(false);
-    expect(s.strips.ch1.faderDb).toBe(level);
-    expect(s.sends.ch1).toBe(sends);
+    expect(dcaMuteSources(s, "ch1").map((d) => d.id)).toEqual(["d1"]);
     s = reducer(s, { type: "mute", id: "ch1" });
     s = reducer(s, { type: "mute", id: "b1" });
-    expect(busMuteSources(s, "ch1")).toEqual([]);
+    s = reducer(s, { type: "mute", id: "d1" });
+    expect(dcaMuteSources(s, "ch1")).toEqual([]);
+    expect(dcaMuteSources(s, "b1")).toEqual([]);
     expect(s.strips.ch1.muted).toBe(true);
-    s = reducer(s, { type: "mute", id: "b9" });
-    expect(busMuteSources(s, "ch1")).toEqual([]);
+    expect(s.strips.b1.muted).toBe(true);
+    expect(s.strips.ch1.faderDb).toBe(before.strips.ch1.faderDb);
+    expect(s.sends).toBe(before.sends);
   });
   it("preserves normal faders and other buses during SOF edits", () => {
     let s = createInitialState();

@@ -3,9 +3,8 @@ import type { MixerState, StripConfig } from "../mixer/types";
 import { dispatch } from "../mixer/store";
 import {
   controllingDcas,
-  busMuteSources,
+  dcaMuteSources,
   displayedDb,
-  effectiveMute,
   isSendMode,
 } from "../mixer/state";
 import { Fader } from "./Fader";
@@ -18,17 +17,14 @@ export function ChannelStrip({
 }) {
   const s = state.strips[config.id],
     send = isSendMode(state, config.id),
-    muted = effectiveMute(state, config.id),
     selected = state.selectedId === config.id;
-  const mutedBuses = busMuteSources(state, config.id);
-  const busMuted = mutedBuses.length > 0;
+  const mutedDcas = dcaMuteSources(state, config.id);
+  const dcaMuted = mutedDcas.length > 0;
   const muteDescription = s.muted
-    ? "Muted on this channel"
-    : busMuted
-      ? `Muted by ${mutedBuses.map((bus) => bus.name).join(", ")} bus; channel mute is off`
-      : muted
-        ? "Muted by DCA; channel mute is off"
-        : "Channel mute is off";
+    ? "Muted directly"
+    : dcaMuted
+      ? `Muted by ${mutedDcas.map((dca) => dca.name).join(", ")} DCA; direct mute is off`
+      : "Direct mute is off";
   return (
     <section
       data-testid={`strip-${config.id}`}
@@ -110,16 +106,14 @@ export function ChannelStrip({
       ) : (
         <>
           <div className="strip-footer">
-            {busMuted && !s.muted
-              ? "BUS MUTE"
-              : muted && !s.muted
-                ? "DCA MUTE"
-                : config.kind === "dca"
-                  ? "CONTROL GROUP"
-                  : " "}
+            {dcaMuted && !s.muted
+              ? "DCA MUTE"
+              : config.kind === "dca"
+                ? "CONTROL GROUP"
+                : " "}
           </div>
           <button
-            className={`mute ${s.muted ? "active" : busMuted ? "bus-inherited" : muted ? "inherited" : ""}`}
+            className={`mute ${s.muted ? "active" : dcaMuted ? "dca-inherited" : ""}`}
             aria-label={`Mute ${config.number}`}
             aria-pressed={s.muted}
             aria-description={muteDescription}
