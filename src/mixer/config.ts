@@ -164,6 +164,15 @@ export const busMuteMembers: Record<string, readonly string[]> = {
     "ch27",
   ],
 };
+// Sunday send defaults are separate from mute associations: FX membership
+// must never make an FX bus mute propagate to input-channel mute lights.
+export const unitySendMembers: Record<string, readonly string[]> = {
+  ...busMuteMembers,
+  b5: busMuteMembers.b4,
+  b6: busMuteMembers.b1,
+  b7: busMuteMembers.b1,
+  b8: busMuteMembers.b4,
+};
 // Read-only membership transcribed from the DCA overview screenshot.
 const memberships = [
   ["b1", "b6", "b7"],

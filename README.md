@@ -58,7 +58,7 @@ React's external-store subscription keeps the mixer independent of components wi
 
 All ten supplied screenshots were inspected. Channel order, names, category colors, initial fader levels, bus names, DCA membership, HOME/MIXVIEW organization and SOF presentation are transcribed from them. See [reference notes](docs/reference-notes.md).
 
-The app is a first UI pass, not a firmware or DSP emulation. Processing starts flat or bypassed. EQ plots are illustrative, not calculated WING filter responses. There was no dedicated compressor screenshot, so its editor uses provisional common controls. Only the shown IEM 1 send levels are seeded; unshown bus sends start off at silence. Full routing and tap points are not inferred or implemented. No meters fabricate audio activity.
+The app is a first UI pass, not a firmware or DSP emulation. Processing starts flat or bypassed. EQ plots are illustrative, not calculated WING filter responses. There was no dedicated compressor screenshot, so its editor uses provisional common controls. Associated group and FX channel sends start enabled at unity (0 dB). Unassociated sends remain off at silence. IEM defaults retain their previous values. Full routing and tap points are not inferred or implemented. No meters fabricate audio activity.
 
 The available screen area is used for the console rather than reproducing the references' large unused black region. AUX stretches across the available bank. Unused routing, matrix, effects management, monitor, scene/library and configuration pages are omitted. No accounts, cloud saving, network control, audio, lessons or scoring are included.
 
@@ -66,7 +66,7 @@ The available screen area is used for the console rather than reproducing the re
 
 1. Compare this working build against FCC's normal click sequence and refine proportions, spacing and touch targets.
 2. Obtain the dedicated compressor view and precise processing defaults; refine its layout and the EQ interaction.
-3. Confirm the unshown send levels and channel-to-bus routing before any audio work.
+3. Confirm the remaining IEM mixes and send tap points before any audio work.
 
 This repository is for FCC use. It has no deployment workflow or public hosting configuration.
 

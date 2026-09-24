@@ -7,6 +7,7 @@ import {
   iem1Levels,
   inputs,
   strips,
+  unitySendMembers,
 } from "./config";
 import type { MixerAction, MixerState, Processing } from "./types";
 export const MIN_DB = -90;
@@ -93,8 +94,14 @@ export function createInitialState(): MixerState {
           buses.map((b) => [
             b.id,
             {
-              levelDb: b.id === "b9" ? (iem1Levels[i] ?? MIN_DB) : MIN_DB,
-              enabled: b.id === "b9",
+              levelDb:
+                b.id === "b9"
+                  ? (iem1Levels[i] ?? MIN_DB)
+                  : unitySendMembers[b.id]?.includes(s.id)
+                    ? 0
+                    : MIN_DB,
+              enabled:
+                b.id === "b9" || !!unitySendMembers[b.id]?.includes(s.id),
             },
           ]),
         ),

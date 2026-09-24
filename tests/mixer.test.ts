@@ -9,8 +9,63 @@ import {
   dbToPosition,
   positionToDb,
 } from "../src/mixer/state";
-import { layers, busMuteMembers } from "../src/mixer/config";
+import {
+  layers,
+  busMuteMembers,
+  inputs,
+  auxes,
+  iem1Levels,
+} from "../src/mixer/config";
 describe("FCC mixer invariants", () => {
+  it("starts all associated FX sends at unity without adding FX mute propagation", () => {
+    let s = createInitialState();
+    for (const channel of ["ch1", "ch2", "ch3", "ch4"]) {
+      for (const bus of ["b6", "b7"])
+        expect(s.sends[channel][bus]).toEqual({ levelDb: 0, enabled: true });
+      expect(s.sends[channel].b8).toEqual({ levelDb: -90, enabled: false });
+    }
+    for (let n = 18; n <= 27; n++) {
+      for (const bus of ["b5", "b8"])
+        expect(s.sends[`ch${n}`][bus]).toEqual({ levelDb: 0, enabled: true });
+      expect(s.sends[`ch${n}`].b6).toEqual({ levelDb: -90, enabled: false });
+    }
+    for (const bus of ["b5", "b6", "b7", "b8"])
+      s = reducer(s, { type: "mute", id: bus });
+    for (const channel of inputs)
+      expect(busMuteSources(s, channel.id)).toEqual([]);
+  });
+  it("starts main group sends at unity and restores them on reset", () => {
+    let s = createInitialState();
+    for (const [channel, bus] of [
+      ["ch1", "b1"],
+      ["ch8", "b2"],
+      ["ch13", "b3"],
+      ["ch18", "b4"],
+    ]) {
+      expect(s.sends[channel][bus]).toEqual({ levelDb: 0, enabled: true });
+    }
+    expect(s.sends.ch1.b2).toEqual({ levelDb: -90, enabled: false });
+    s = reducer(s, { type: "bus", id: "b1" });
+    s = reducer(s, { type: "sof" });
+    s = reducer(s, { type: "fader", id: "ch1", value: -12 });
+    s = reducer(s, { type: "sendToggle", id: "ch1" });
+    s = reducer(s, { type: "reset" });
+    expect(s.sends.ch1.b1).toEqual({ levelDb: 0, enabled: true });
+  });
+  it("preserves every existing IEM send default", () => {
+    const s = createInitialState();
+    [...inputs, ...auxes].forEach((channel, i) => {
+      expect(s.sends[channel.id].b9).toEqual({
+        levelDb: iem1Levels[i] ?? -90,
+        enabled: true,
+      });
+      for (let b = 10; b <= 16; b++)
+        expect(s.sends[channel.id][`b${b}`]).toEqual({
+          levelDb: -90,
+          enabled: false,
+        });
+    });
+  });
   it("indicates only the explicitly associated main-group channels", () => {
     for (const [bus, members] of Object.entries(busMuteMembers)) {
       const s = reducer(createInitialState(), { type: "mute", id: bus });

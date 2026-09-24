@@ -229,8 +229,9 @@ export default function App() {
                 <p>
                   Channel names, colors, fader positions and DCA membership
                   follow your supplied screenshots. Processing starts flat or
-                  bypassed; the compressor page and unshown send values are
-                  provisional.
+                  bypassed; the compressor page and unshown IEM mixes are
+                  provisional. Group and FX sends start at unity for their
+                  associated channels.
                 </p>
               </>
             )}

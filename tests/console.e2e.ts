@@ -159,3 +159,38 @@ test("bus mute pulses while direct channel mute remains independent", async ({
   await expect(channelMute).toHaveCSS("animation-name", "none");
   await expect(channelMute).toHaveCSS("border-top-style", "dashed");
 });
+
+test("Sunday group and FX send defaults are visible at unity", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /SENDS ON FADERS OFF/ }).click();
+  for (const [bus, channel, layer] of [
+    ["VOX", "1", "CH 1–16"],
+    ["GTRS", "8", "CH 1–16"],
+    ["KEYS", "13", "CH 1–16"],
+    ["DRUM", "18", "CH 17–32"],
+    ["DRUM CRUSH", "18", "CH 17–32"],
+    ["VOX VERB", "1", "CH 1–16"],
+    ["VOX DLY", "1", "CH 1–16"],
+    ["DRUM VERB", "18", "CH 17–32"],
+  ]) {
+    await page.getByRole("button", { name: layer, exact: true }).click();
+    await page
+      .getByRole("button", { name: `Select bus ${bus}`, exact: true })
+      .click();
+    await expect(
+      page.getByRole("slider", { name: `Send ${channel}`, exact: true }),
+    ).toHaveAttribute("aria-valuetext", "0.0 dB");
+    await expect(
+      page.getByRole("button", { name: `Send on ${channel}`, exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+  }
+  await page.getByRole("button", { name: "CH 1–16", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Select bus IEM 1", exact: true })
+    .click();
+  await expect(
+    page.getByRole("slider", { name: "Send 1", exact: true }),
+  ).toHaveAttribute("aria-valuetext", "-12.9 dB");
+});

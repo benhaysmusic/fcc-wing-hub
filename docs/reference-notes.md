@@ -19,7 +19,7 @@ DCA membership: D1 → B1/B6/B7; D2 → B2; D3 → B3; D4 → B4/B5; D5 → CH7;
 
 The UI includes CH 1–40 because its layer button is visibly present; it uses a horizontally scrollable bank because its selected view was not supplied. MAIN/MTX, ALL, USER1/2 and other unselected configuration views are intentionally omitted.
 
-Unconfirmed details remain explicit: complete fixed input-to-bus routing, non-IEM1 sends, pre/post send tap points, every channel's processing values, exact WING fader taper, specific compressor model/layout. Gate defaults use visible values but are bypassed initially. EQ starts flat. The six-band curve is an illustrative control visualization, not a DSP prediction.
+Unconfirmed details remain explicit: complete fixed input-to-bus routing, remaining IEM mixes, pre/post send tap points, every channel's processing values, exact WING fader taper, specific compressor model/layout. Gate defaults use visible values but are bypassed initially. EQ starts flat. The six-band curve is an illustrative control visualization, not a DSP prediction.
 
 Original images are retained with the local task under work/reference; they are not embedded into the runtime application.
 
@@ -28,3 +28,7 @@ Original images are retained with the local task under work/reference; they are 
 User-requested behavior: a directly muted channel is solid red. A locally unmuted channel whose main group bus is directly muted gently pulses red; releasing the bus mute does not change the channel's own mute. FX and IEM bus mutes explicitly do not affect source channel mute lights.
 
 The UI associations are VOX → CH1–4; GTRS → CH8–12; KEYS → CH13–16; DRUM → CH18–27. They are explicit in `busMuteMembers`, separate from send levels and future audio routing. HH1, HH2, JUSTIN, click/cues and AUX are not assigned to those groups. Existing DCA mute indications remain independent. Reduced-motion mode replaces the pulse with a dim red button and dashed border.
+
+## Sunday send defaults
+
+User-confirmed: VOX channels CH1–4 feed VOX, VOX VERB and VOX DLY at 0 dB with sends enabled. GTRS CH8–12 feed GTRS; KEYS CH13–16 feed KEYS; DRUM CH18–27 feed DRUM, DRUM CRUSH and DRUM VERB at 0 dB with sends enabled. Unassociated sends remain off. IEM1–8 defaults are unchanged. Reset restores these values. Bus master and source channel faders are unchanged. FX sends do not introduce mute-light propagation.
