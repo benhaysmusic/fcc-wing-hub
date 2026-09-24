@@ -24,6 +24,7 @@ export interface Dynamics {
   makeup: number;
 }
 export interface EqBand {
+  shape: "bell" | "shelf";
   frequency: number;
   gain: number;
   q: number;
@@ -33,6 +34,7 @@ export interface Processing {
   inputBalanceDb: number;
   phantom48V: boolean;
   highCut: boolean;
+  highCutHz: number;
   trim: number;
   pan: number;
   invert: boolean;

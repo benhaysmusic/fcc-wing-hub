@@ -789,78 +789,10 @@ button:disabled {
   height: 17px;
   cursor: pointer;
 }
-.eq-editor {
-  display: flex;
-  flex: 1;
-  padding: 12px;
-  gap: 16px;
-  min-height: 0;
-}
-.eq-plot {
-  flex: 1;
-  min-width: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    #0b1013 0 39px,
-    #30393f 39px 40px
-  );
-  display: flex;
-  flex-direction: column;
-}
-.eq-plot svg {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: visible;
-}
 .grid-line {
   stroke: #384047;
   stroke-width: 1;
   fill: none;
-}
-.zero-line {
-  stroke: #727b80;
-  fill: none;
-}
-.eq-curve {
-  stroke: #e6a32c;
-  fill: none;
-  stroke-width: 3;
-}
-.eq-plot circle {
-  fill: #1c252bcc;
-  stroke: #bcc5cb;
-  stroke-width: 2;
-  cursor: pointer;
-}
-.eq-plot circle.chosen {
-  stroke: #ffcd42;
-  fill: #ffcd4240;
-}
-.frequency-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 8px;
-  background: #0a0d0f;
-  padding: 4px;
-  color: #919ea6;
-}
-.eq-controls {
-  width: 190px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.band-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 5px;
-}
-.band-tabs button {
-  min-width: 0;
-  flex: 1;
-  font-size: 10px;
-  padding: 0;
 }
 .dynamics-editor {
   display: flex;
@@ -1769,5 +1701,279 @@ button:disabled {
   }
   .input-preamp {
     padding-top: 8px;
+  }
+}
+
+/* Recorded WING EQ: graph with a compact two-column control rack. */
+.wing-eq {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  background: #070707;
+  color: #c9c9c9;
+}
+.wing-eq-toolbar {
+  height: 43px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 5px 10px;
+  border-bottom: 4px solid #090909;
+  background: #232323;
+}
+.wing-eq-toolbar button {
+  border-radius: 0;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.wing-eq-toolbar button.on {
+  background: #e3cd56;
+  color: #111;
+}
+.wing-eq-model,
+.wing-eq-filter-label {
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  padding: 2px 7px;
+  min-width: 135px;
+}
+.wing-eq-toolbar small {
+  font-size: 8px;
+}
+.wing-eq-toolbar span {
+  font-size: 11px;
+}
+.wing-eq-mix {
+  width: 110px;
+}
+.wing-eq-mix > span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+}
+.wing-eq-mix b {
+  font-weight: 400;
+  color: #d7c75e;
+}
+.wing-eq-mix > div {
+  height: 4px;
+  background: #d7c75e;
+  width: 80%;
+  margin-top: 5px;
+  border-right: 2px solid white;
+}
+.wing-eq-fixed {
+  border: 1px solid #777;
+  padding: 4px 9px;
+  color: #999;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.wing-eq-toolbar .freeze {
+  margin-left: auto;
+}
+.wing-eq-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 6px;
+}
+.wing-eq-graph {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  background: #020202;
+}
+.wing-eq-graph > svg {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: block;
+}
+.wing-eq-handle {
+  cursor: move;
+  touch-action: none;
+}
+.wing-eq-frequency-labels {
+  position: relative;
+  height: 16px;
+  flex: none;
+  margin: 0 8px;
+  font-size: 8px;
+  color: #aaa;
+}
+.wing-eq-frequency-labels span {
+  position: absolute;
+  transform: translateX(-50%);
+  top: 3px;
+}
+.wing-eq-side {
+  display: grid;
+  grid-template-columns: 90px 134px;
+  gap: 12px;
+  padding: 5px 12px;
+  background: #232323;
+  flex: none;
+  min-height: 0;
+}
+.wing-eq-bands {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 5px;
+  min-height: 0;
+}
+.wing-eq-bands > button {
+  min-height: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 8px;
+  border: 1px solid #080808;
+  border-radius: 1px;
+  background: #252525;
+  color: #bbb;
+  font-size: 12px;
+}
+.wing-eq-bands > button.chosen {
+  background: #7181d0;
+  color: #141414;
+}
+.wing-eq-cuts {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+}
+.wing-eq-cuts button {
+  background: none;
+  padding: 0;
+  border: 0;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+}
+.wing-eq-cuts svg {
+  width: 26px;
+  height: 26px;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.wing-eq-cuts button.on {
+  color: #ddd;
+}
+.wing-eq-cuts button.on svg {
+  background: #7d8bd6;
+  color: #151515;
+}
+.wing-eq-bands .band-solo {
+  padding: 4px 2px;
+  text-align: center;
+  font-size: 10px;
+}
+.wing-eq-parameters {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
+  gap: 5px;
+}
+.wing-eq .wing-eq-mode {
+  min-height: 0;
+  background: #353535;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 3px 5px;
+  color: #ddd;
+  text-align: left;
+}
+.wing-eq-mode small {
+  font-size: 8px;
+}
+.wing-eq-mode span {
+  font-size: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.wing-eq-mode b {
+  font-size: 15px;
+  line-height: 11px;
+}
+.wing-eq-slider {
+  display: block;
+  min-width: 0;
+  padding: 2px 3px;
+}
+.wing-eq-slider > span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  white-space: nowrap;
+  gap: 4px;
+}
+.wing-eq-slider output {
+  color: var(--eq-control-color);
+}
+.wing-eq-slider input[type="range"] {
+  appearance: none;
+  width: 100%;
+  display: block;
+  height: 3px;
+  background: #666;
+  border: 0;
+  border-radius: 0;
+  margin: 7px 0 3px;
+  cursor: ew-resize;
+}
+.wing-eq-slider input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 5px;
+  height: 11px;
+  border-radius: 1px;
+  background: var(--eq-control-color);
+}
+.wing-eq-slider input[type="range"]::-moz-range-thumb {
+  width: 5px;
+  height: 11px;
+  border: 0;
+  border-radius: 1px;
+  background: var(--eq-control-color);
+}
+.wing-eq-slider:focus-within {
+  background: #454545;
+}
+.wing-eq-q {
+  min-height: 28px;
+}
+@media (max-height: 850px) {
+  .wing-eq-side {
+    gap: 8px;
+    padding: 4px 8px;
+    grid-template-columns: 78px 120px;
+  }
+  .wing-eq-parameters,
+  .wing-eq-bands {
+    gap: 2px;
+  }
+  .wing-eq-bands > button {
+    min-height: 0;
+    padding: 2px 7px;
+  }
+  .wing-eq-slider {
+    padding: 1px 3px;
+  }
+  .wing-eq-q {
+    min-height: 24px;
+  }
+  .wing-eq-toolbar {
+    height: 38px;
   }
 }

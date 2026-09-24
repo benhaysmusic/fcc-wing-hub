@@ -1,3 +1,4 @@
+import { eqResponseDb, eqXFrequency } from "../mixer/eq";
 import { byId, dcaDisplayMembers } from "../mixer/config";
 import { dispatch } from "../mixer/store";
 import type { MixerState, StripConfig } from "../mixer/types";
@@ -71,7 +72,7 @@ export function MixOverview({
                   GATE<small>S/C</small>
                 </button>
                 <button
-                  className={`mini-eq ${p.eqEnabled ? "enabled" : ""}`}
+                  className={`mini-eq ${p.eqEnabled || p.lowCut || p.highCut ? "enabled" : ""}`}
                   aria-label={`EQ ${c.number}`}
                   onClick={() =>
                     dispatch({ type: "editor", editor: "EQ", id: c.id })
@@ -79,11 +80,11 @@ export function MixOverview({
                 >
                   <svg viewBox="0 0 100 40">
                     <path
-                      d={
-                        p.eqEnabled
-                          ? "M0 28 Q15 28 25 22 T50 22 T75 20 T100 24"
-                          : "M0 22 H100"
-                      }
+                      d={Array.from(
+                        { length: 51 },
+                        (_, i) =>
+                          `${i ? "L" : "M"}${i * 2} ${Math.max(0, Math.min(40, 20 - eqResponseDb(p, eqXFrequency(i * 20))))}`,
+                      ).join(" ")}
                     />
                   </svg>
                 </button>

@@ -28,3 +28,7 @@ Fourteen unit/state tests and five Chromium browser tests pass. New checks cover
 ## Recorded input layout update
 
 Fourteen unit/state tests and six Chromium browser tests pass. Input coverage verifies gain/trim/balance, 48V and independent low/high-cut toggles, channel-specific retention, reset, pointer dragging, double-click zeroing, fixed untouched controls, and panel fit at 1440×900 and 1280×800. Both input screenshots were reviewed, including active filter/48V states. Production build and standalone export pass.
+
+## Recorded EQ and shared filters update
+
+Seventeen unit/state tests and seven Chromium browser tests pass. New checks cover low/high attenuation, independent filter/band bypass, shelving vs parametric response, Q width, logarithmic frequency mapping, Input-to-EQ and EQ-to-Input toggle synchronization, frequency adjustments, band dragging and channel retention. Reviewed the EQ layout at 1440×900 and 1280×800. Existing gate, input, DCA, mute and Sunday-send workflows pass. Production build and standalone export pass.

@@ -39,6 +39,7 @@ export function defaultProcessing(): Processing {
     inputBalanceDb: 0,
     phantom48V: false,
     highCut: false,
+    highCutHz: 11910,
     trim: 0,
     pan: 0,
     invert: false,
@@ -68,7 +69,8 @@ export function defaultProcessing(): Processing {
       makeup: 0,
     },
     eqEnabled: false,
-    bands: [54, 110, 450, 1600, 5700, 13000].map((frequency) => ({
+    bands: [54, 110, 450, 1600, 5700, 13000].map((frequency, i) => ({
+      shape: i === 0 || i === 5 ? "shelf" : "bell",
       frequency,
       gain: 0,
       q: 1,

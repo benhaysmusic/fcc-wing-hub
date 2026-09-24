@@ -363,3 +363,97 @@ test("recorded input controls retain independent channel settings and fixed sect
       page.getByRole("button", { name, exact: true }),
     ).toHaveAttribute("aria-pressed", "false");
 });
+
+test("EQ cuts share input state and change the same response in both directions", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "EQ 1", exact: true }).click();
+  const curve = page.getByTestId("eq-response");
+  const flat = await curve.getAttribute("d");
+  await page.getByRole("button", { name: "INPUT", exact: true }).click();
+  await page.getByRole("button", { name: "Low cut", exact: true }).click();
+  await page.getByRole("button", { name: "EQ", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Low cut", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  const low = await curve.getAttribute("d");
+  expect(low).not.toBe(flat);
+  await page.getByRole("button", { name: "High cut", exact: true }).click();
+  const both = await curve.getAttribute("d");
+  expect(both).not.toBe(low);
+  await page
+    .getByRole("slider", { name: "Low cut frequency", exact: true })
+    .fill("800");
+  const moved = await curve.getAttribute("d");
+  expect(moved).not.toBe(both);
+  await page.getByRole("button", { name: "INPUT", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "High cut", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Low cut", exact: true }).click();
+  await page.getByRole("button", { name: "EQ", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Low cut", exact: true }),
+  ).toHaveAttribute("aria-pressed", "false");
+  expect(await curve.getAttribute("d")).not.toBe(moved);
+  await page.getByRole("button", { name: "High cut", exact: true }).click();
+  await expect(curve).toHaveAttribute("d", flat!);
+  await page.getByRole("button", { name: "INPUT", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "High cut", exact: true }),
+  ).toHaveAttribute("aria-pressed", "false");
+  await page.getByRole("button", { name: "EQ", exact: true }).click();
+  await page.getByRole("button", { name: "EQ enabled", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Low band mode", exact: true })
+    .click();
+  await expect(
+    page.getByRole("slider", { name: "Q", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("slider", { name: "Gain", exact: true }).fill("6");
+  const wide = await curve.getAttribute("d");
+  await page.getByRole("slider", { name: "Q", exact: true }).fill("8");
+  expect(await curve.getAttribute("d")).not.toBe(wide);
+  const handle = (await page
+    .getByLabel("Drag EQ band 1", { exact: true })
+    .boundingBox())!;
+  await page.mouse.move(
+    handle.x + handle.width / 2,
+    handle.y + handle.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    handle.x + handle.width / 2 + 40,
+    handle.y + handle.height / 2 - 20,
+    { steps: 8 },
+  );
+  await page.mouse.up();
+  await expect(
+    page.getByRole("button", { name: "EQ band 1", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  const gain = await page
+    .getByRole("slider", { name: "Gain", exact: true })
+    .inputValue();
+  expect(Number(gain)).toBeGreaterThan(0);
+  const retained = await curve.getAttribute("d");
+  await page
+    .getByRole("button", { name: "Select 2 VOX 2", exact: true })
+    .click();
+  await expect(curve).toHaveAttribute("d", flat!);
+  await page
+    .getByRole("button", { name: "Select 1 VOX 1", exact: true })
+    .click();
+  await expect(curve).toHaveAttribute("d", retained!);
+  for (const width of [1440, 1280]) {
+    await page.setViewportSize({ width, height: width === 1440 ? 900 : 800 });
+    const panel = (await page.locator(".wing-eq").boundingBox())!;
+    const control = (await page
+      .getByRole("slider", { name: "High cut frequency", exact: true })
+      .boundingBox())!;
+    expect(control.y + control.height).toBeLessThanOrEqual(
+      panel.y + panel.height,
+    );
+    await page.screenshot({ path: `test-results/eq-active-${width}.png` });
+  }
+});
