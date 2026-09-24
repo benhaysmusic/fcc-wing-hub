@@ -1977,3 +1977,18 @@ button:disabled {
     height: 38px;
   }
 }
+
+.wing-eq-graph {
+  position: relative;
+}
+.eq-bypass-label {
+  position: absolute;
+  bottom: 23px;
+  left: 8px;
+  font-size: 9px;
+  color: #aaa;
+  background: #151515dd;
+  padding: 3px 5px;
+  pointer-events: none;
+  z-index: 1;
+}

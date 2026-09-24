@@ -36,3 +36,13 @@ describe("silent EQ response display", () => {
       expect(eqXFrequency(eqFrequencyX(f))).toBeCloseTo(f, 6);
   });
 });
+
+it("can preview configured hills while preserving the bypassed response", () => {
+  const p = defaultProcessing();
+  p.bands[2].gain = 9;
+  expect(eqResponseDb(p, p.bands[2].frequency)).toBe(0);
+  expect(eqResponseDb(p, p.bands[2].frequency, true)).toBe(9);
+  p.bands[2].gain = -9;
+  expect(eqResponseDb(p, p.bands[2].frequency, true)).toBe(-9);
+  expect(p.eqEnabled).toBe(false);
+});

@@ -83,7 +83,7 @@ export function MixOverview({
                       d={Array.from(
                         { length: 51 },
                         (_, i) =>
-                          `${i ? "L" : "M"}${i * 2} ${Math.max(0, Math.min(40, 20 - eqResponseDb(p, eqXFrequency(i * 20))))}`,
+                          `${i ? "L" : "M"}${i * 2} ${Math.max(0, Math.min(40, 20 - eqResponseDb(p, eqXFrequency(i * 20), true)))}`,
                       ).join(" ")}
                     />
                   </svg>

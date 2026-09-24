@@ -457,3 +457,36 @@ test("EQ cuts share input state and change the same response in both directions"
     await page.screenshot({ path: `test-results/eq-active-${width}.png` });
   }
 });
+
+test("EQ editing shows hills and valleys even when bypassed", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "EQ 1", exact: true }).click();
+  const enabled = page.getByRole("button", { name: "EQ enabled", exact: true });
+  await expect(enabled).toHaveAttribute("aria-pressed", "false");
+  await expect(
+    page.getByText("EQ BYPASSED · SETTINGS PREVIEW", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "EQ band 2", exact: true }).click();
+  const response = page.getByTestId("eq-response");
+  const flat = await response.getAttribute("d");
+  await page.getByRole("slider", { name: "Gain", exact: true }).fill("9");
+  const hill = await response.getAttribute("d");
+  expect(hill).not.toBe(flat);
+  await page.getByRole("slider", { name: "Gain", exact: true }).fill("-9");
+  const valley = await response.getAttribute("d");
+  expect(valley).not.toBe(flat);
+  expect(valley).not.toBe(hill);
+  await page.getByRole("button", { name: "EQ band 3", exact: true }).click();
+  await page.getByRole("slider", { name: "Gain", exact: true }).fill("8");
+  await page.screenshot({ path: "test-results/eq-hills-valleys.png" });
+  const combined = await response.getAttribute("d");
+  await enabled.click();
+  await expect(response).toHaveAttribute("d", combined!);
+  await expect(
+    page.getByText("EQ BYPASSED · SETTINGS PREVIEW", { exact: true }),
+  ).toHaveCount(0);
+  await enabled.click();
+  await expect(response).toHaveAttribute("d", combined!);
+});

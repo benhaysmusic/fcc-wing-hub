@@ -32,3 +32,5 @@ Fourteen unit/state tests and six Chromium browser tests pass. Input coverage ve
 ## Recorded EQ and shared filters update
 
 Seventeen unit/state tests and seven Chromium browser tests pass. New checks cover low/high attenuation, independent filter/band bypass, shelving vs parametric response, Q width, logarithmic frequency mapping, Input-to-EQ and EQ-to-Input toggle synchronization, frequency adjustments, band dragging and channel retention. Reviewed the EQ layout at 1440×900 and 1280×800. Existing gate, input, DCA, mute and Sunday-send workflows pass. Production build and standalone export pass.
+
+EQ visibility fix: 18 unit/state tests and 8 Chromium tests pass. Added coverage for visible boost/cut curves while bypassed, unchanged settings when enabling/disabling EQ, and separation from the effective bypassed response. Reviewed a screenshot with simultaneous +8 dB boost and -9 dB cut.

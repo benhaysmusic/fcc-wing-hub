@@ -83,7 +83,7 @@ export function EqEditor({
   const points = Array.from(
     { length: 501 },
     (_, i) =>
-      `${i ? "L" : "M"}${i * 2} ${clamp(y(eqResponseDb(p, eqXFrequency(i * 2))), 0, 300)}`,
+      `${i ? "L" : "M"}${i * 2} ${clamp(y(eqResponseDb(p, eqXFrequency(i * 2), true)), 0, 300)}`,
   ).join(" ");
   const drag = (event: PointerEvent<SVGCircleElement>, index: number) => {
     if (event.type === "pointerdown") {
@@ -139,6 +139,11 @@ export function EqEditor({
       </div>
       <div className="wing-eq-body">
         <div className="wing-eq-graph">
+          {!p.eqEnabled && (
+            <span className="eq-bypass-label">
+              EQ BYPASSED · SETTINGS PREVIEW
+            </span>
+          )}
           <svg
             viewBox="0 0 1000 300"
             preserveAspectRatio="none"
@@ -160,13 +165,14 @@ export function EqEditor({
                 strokeWidth="1"
               />
             ))}
-            <path d={`${points}L1000 150L0 150Z`} fill="#bba14c3d" />
+            <path d={`${points}L1000 150L0 150Z`} fill="#c5a95055" />
             <path
               data-testid="eq-response"
               d={points}
               fill="none"
-              stroke="#bba14c"
-              strokeWidth="2"
+              stroke="#dfc56b"
+              strokeWidth="2.5"
+              vectorEffect="non-scaling-stroke"
             />
             {p.bands.map((b, i) => (
               <g key={i}>
