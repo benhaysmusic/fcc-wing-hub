@@ -29,6 +29,10 @@ export interface EqBand {
   q: number;
 }
 export interface Processing {
+  inputGainDb: number;
+  inputBalanceDb: number;
+  phantom48V: boolean;
+  highCut: boolean;
   trim: number;
   pan: number;
   invert: boolean;

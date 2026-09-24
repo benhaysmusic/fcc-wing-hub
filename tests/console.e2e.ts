@@ -259,3 +259,107 @@ test("recorded gate controls and graph handles stay synchronized per channel", a
     .click();
   await expect(threshold).toHaveValue(changedThreshold);
 });
+
+test("recorded input controls retain independent channel settings and fixed sections", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "EQ 1", exact: true }).click();
+  await page.getByRole("button", { name: "INPUT", exact: true }).click();
+  const gain = page.getByRole("slider", { name: "Input gain", exact: true });
+  const trim = page.getByRole("slider", { name: "Trim", exact: true });
+  const balance = page.getByRole("slider", {
+    name: "Input balance",
+    exact: true,
+  });
+  await gain.fill("12.5");
+  await trim.fill("13.3");
+  await balance.fill("-2.7");
+  const curve = await page.getByTestId("input-trim-response").getAttribute("d");
+  await balance.fill("9");
+  expect(
+    await page.getByTestId("input-trim-response").getAttribute("d"),
+  ).not.toBe(curve);
+  for (const name of ["48V phantom power", "Low cut", "High cut"]) {
+    await page.getByRole("button", { name, exact: true }).click();
+    await expect(
+      page.getByRole("button", { name, exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+  }
+  await page
+    .getByRole("button", { name: "Select 2 VOX 2", exact: true })
+    .click();
+  await expect(gain).toHaveValue("30");
+  await expect(trim).toHaveValue("0");
+  await expect(balance).toHaveValue("0");
+  await expect(
+    page.getByRole("button", { name: "48V phantom power", exact: true }),
+  ).toHaveAttribute("aria-pressed", "false");
+  await page
+    .getByRole("button", { name: "Select 1 VOX 1", exact: true })
+    .click();
+  await expect(gain).toHaveValue("12.5");
+  await expect(trim).toHaveValue("13.3");
+  await expect(balance).toHaveValue("9");
+  await trim.dblclick();
+  await expect(trim).toHaveValue("0");
+  await balance.dblclick();
+  await expect(balance).toHaveValue("0");
+  // Exercise the same mouse drags as the recording, not just direct field edits.
+  const trimBox = (await trim.boundingBox())!;
+  await page.mouse.move(
+    trimBox.x + trimBox.width / 2,
+    trimBox.y + trimBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    trimBox.x + trimBox.width / 2,
+    trimBox.y + trimBox.height / 2 - 30,
+    { steps: 8 },
+  );
+  await page.mouse.up();
+  expect(Number(await trim.inputValue())).toBeGreaterThan(0);
+  const balanceBox = (await balance.boundingBox())!;
+  await page.mouse.move(
+    balanceBox.x + balanceBox.width / 2,
+    balanceBox.y + balanceBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(
+    balanceBox.x + balanceBox.width / 2 + 35,
+    balanceBox.y + balanceBox.height / 2,
+    { steps: 8 },
+  );
+  await page.mouse.up();
+  expect(Number(await balance.inputValue())).toBeGreaterThan(0);
+  await expect(
+    page.getByRole("button", { name: "INVERT", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("slider", { name: /delay/i })).toHaveCount(0);
+  for (const width of [1440, 1280]) {
+    await page.setViewportSize({ width, height: width === 1440 ? 900 : 800 });
+    const panel = (await page.locator(".wing-input").boundingBox())!;
+    const filter = (await page
+      .getByRole("button", { name: "High cut", exact: true })
+      .boundingBox())!;
+    expect(filter.x + filter.width).toBeLessThanOrEqual(panel.x + panel.width);
+    const delay = (await page.locator(".input-delay-off").boundingBox())!;
+    expect(delay.y + delay.height).toBeLessThanOrEqual(
+      panel.y + panel.height + 1,
+    );
+    await page.screenshot({ path: `test-results/input-active-${width}.png` });
+  }
+  await page.getByRole("button", { name: "RESET", exact: true }).click();
+  await page
+    .getByRole("button", { name: "RESET CONSOLE", exact: true })
+    .click();
+  await page.getByRole("button", { name: "EQ 1", exact: true }).click();
+  await page.getByRole("button", { name: "INPUT", exact: true }).click();
+  await expect(gain).toHaveValue("30");
+  await expect(trim).toHaveValue("0");
+  await expect(balance).toHaveValue("0");
+  for (const name of ["48V phantom power", "Low cut", "High cut"])
+    await expect(
+      page.getByRole("button", { name, exact: true }),
+    ).toHaveAttribute("aria-pressed", "false");
+});

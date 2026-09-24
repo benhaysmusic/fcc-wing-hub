@@ -1,3 +1,4 @@
+import { InputEditor } from "./InputEditor";
 import { GateEditor } from "./GateEditor";
 import { useState } from "react";
 import { byId, dcaDisplayMembers } from "../mixer/config";
@@ -102,99 +103,30 @@ export function ProcessingEditor({ state }: { state: MixerState }) {
     <div className="processing-editor">
       {editor === "Gate" ? (
         <GateEditor gate={p.gate} onChange={(gate) => patch({ gate })} />
+      ) : editor === "Input" ? (
+        <InputEditor channel={c} processing={p} onChange={patch} />
       ) : (
         <>
           <div className="processor-bar">
-            {editor !== "Input" && (
-              <button
-                className={enabled ? "active" : ""}
-                onClick={toggle}
-                aria-pressed={enabled}
-                aria-label={`${editor} enabled`}
-              >
-                {enabled ? "ON" : "OFF"}
-              </button>
-            )}
+            <button
+              className={enabled ? "active" : ""}
+              onClick={toggle}
+              aria-pressed={enabled}
+              aria-label={`${editor} enabled`}
+            >
+              {enabled ? "ON" : "OFF"}
+            </button>
             <b>
-              {editor === "Input"
-                ? "CHANNEL INPUT"
-                : editor === "Compressor"
-                  ? "WING COMPRESSOR"
-                  : `WING ${editor.toUpperCase()}`}
+              {editor === "Compressor"
+                ? "WING COMPRESSOR"
+                : `WING ${editor.toUpperCase()}`}
             </b>
-            <span>
-              {editor === "Input" ? "TRIM & BALANCE" : "SELECTED CHANNEL"}
-            </span>
+            <span>SELECTED CHANNEL</span>
             <small>
               {c.number} / {c.name}
             </small>
           </div>
-          {editor === "Input" ? (
-            <div className="input-editor">
-              <div className="input-source">
-                <h3>CHANNEL INPUT</h3>
-                <div style={{ borderColor: c.color }}>
-                  <b style={{ background: c.color }}>{c.source}</b>
-                  <span>◉</span>
-                  <small>
-                    {c.number} · {c.name || "UNASSIGNED"}
-                  </small>
-                </div>
-                <p>Fixed FCC input</p>
-              </div>
-              <div className="trim-controls">
-                <h3>TRIM & BALANCE</h3>
-                <div className="trim-face">
-                  <div style={{ bottom: `${((p.trim + 18) / 36) * 100}%` }} />
-                  <strong>
-                    {p.trim.toFixed(1)} <small>dB</small>
-                  </strong>
-                </div>
-                <Parameter
-                  label="Trim"
-                  value={p.trim}
-                  min={-18}
-                  max={18}
-                  step={0.1}
-                  unit="dB"
-                  onChange={(trim) => patch({ trim })}
-                />
-                <Parameter
-                  label="Balance"
-                  value={p.pan}
-                  min={-100}
-                  max={100}
-                  unit="%"
-                  onChange={(pan) => patch({ pan })}
-                />
-              </div>
-              <div className="filter-controls">
-                <h3>FILTER</h3>
-                <button
-                  className={p.lowCut ? "active" : ""}
-                  onClick={() => patch({ lowCut: !p.lowCut })}
-                  aria-pressed={p.lowCut}
-                >
-                  LOW CUT
-                </button>
-                <Parameter
-                  label="Low cut frequency"
-                  value={p.lowCutHz}
-                  min={20}
-                  max={400}
-                  unit="Hz"
-                  onChange={(lowCutHz) => patch({ lowCutHz })}
-                />
-                <button
-                  className={p.invert ? "active" : ""}
-                  onClick={() => patch({ invert: !p.invert })}
-                  aria-pressed={p.invert}
-                >
-                  Ø INVERT
-                </button>
-              </div>
-            </div>
-          ) : editor === "EQ" ? (
+          {editor === "EQ" ? (
             <div className="eq-editor">
               <div className="eq-plot">
                 <svg

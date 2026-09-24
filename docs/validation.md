@@ -24,3 +24,7 @@ Twelve state tests and four browser tests validate DCA glow on associated channe
 ## Recorded gate layout update
 
 Fourteen unit/state tests and five Chromium browser tests pass. New checks cover bounded expansion, hard-gate behavior, zero range, graph/slider synchronization and channel-specific retention. Existing console, DCA mute and Sunday-send checks still pass. Gate screenshot reviewed against the supplied recording. Production build and self-contained HTML export pass.
+
+## Recorded input layout update
+
+Fourteen unit/state tests and six Chromium browser tests pass. Input coverage verifies gain/trim/balance, 48V and independent low/high-cut toggles, channel-specific retention, reset, pointer dragging, double-click zeroing, fixed untouched controls, and panel fit at 1440×900 and 1280×800. Both input screenshots were reviewed, including active filter/48V states. Production build and standalone export pass.

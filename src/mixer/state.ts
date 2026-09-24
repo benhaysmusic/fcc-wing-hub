@@ -35,6 +35,10 @@ export const positionToDb = (p: number) =>
   Math.round(interpolate(p, 1, 0) * 10) / 10;
 export function defaultProcessing(): Processing {
   return {
+    inputGainDb: 30,
+    inputBalanceDb: 0,
+    phantom48V: false,
+    highCut: false,
     trim: 0,
     pan: 0,
     invert: false,
