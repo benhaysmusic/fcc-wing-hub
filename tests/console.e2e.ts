@@ -127,3 +127,35 @@ test("desktop layouts keep console controls reachable", async ({ page }) => {
   await page.getByRole("button", { name: "DCA", exact: true }).click();
   await page.screenshot({ path: "test-results/dca.png", fullPage: true });
 });
+
+test("bus mute pulses while direct channel mute remains independent", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const channelMute = page.getByRole("button", { name: "Mute 1", exact: true });
+  const toggleBus = async () => {
+    await page.getByRole("button", { name: "BUSES", exact: true }).click();
+    await page.getByRole("button", { name: "Mute B1", exact: true }).click();
+    await page.getByRole("button", { name: "CH 1–16", exact: true }).click();
+  };
+  await channelMute.click();
+  await toggleBus();
+  await expect(channelMute).toHaveAttribute("aria-pressed", "false");
+  await expect(channelMute).toHaveClass(/bus-inherited/);
+  await expect(channelMute).toHaveCSS("animation-name", "bus-mute-pulse");
+  await toggleBus();
+  await expect(channelMute).not.toHaveClass(/bus-inherited|active/);
+  await toggleBus();
+  await channelMute.click();
+  await expect(channelMute).toHaveClass(/active/);
+  await expect(channelMute).toHaveCSS("animation-name", "none");
+  await toggleBus();
+  await expect(channelMute).toHaveAttribute("aria-pressed", "true");
+  await expect(channelMute).toHaveClass(/active/);
+  await toggleBus();
+  await channelMute.click();
+  await expect(channelMute).toHaveClass(/bus-inherited/);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(channelMute).toHaveCSS("animation-name", "none");
+  await expect(channelMute).toHaveCSS("border-top-style", "dashed");
+});

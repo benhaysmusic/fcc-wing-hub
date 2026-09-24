@@ -1,4 +1,13 @@
-import { auxes, buses, byId, dcas, iem1Levels, inputs, strips } from "./config";
+import {
+  auxes,
+  buses,
+  busMuteMembers,
+  byId,
+  dcas,
+  iem1Levels,
+  inputs,
+  strips,
+} from "./config";
 import type { MixerAction, MixerState, Processing } from "./types";
 export const MIN_DB = -90;
 export const formatDb = (db: number) => (db <= MIN_DB ? "−∞" : db.toFixed(1));
@@ -107,6 +116,13 @@ export function effectiveMute(state: MixerState, id: string) {
   return (
     state.strips[id].muted ||
     controllingDcas(id).some((d) => state.strips[d.id].muted)
+  );
+}
+// This is a console indication, not a global audio-channel mute: muting a
+// destination bus must not silence unrelated sends (for example an IEM mix).
+export function busMuteSources(state: MixerState, id: string) {
+  return buses.filter(
+    (bus) => busMuteMembers[bus.id]?.includes(id) && state.strips[bus.id].muted,
   );
 }
 export function effectiveDb(state: MixerState, id: string) {

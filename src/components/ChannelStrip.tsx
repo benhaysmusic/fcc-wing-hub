@@ -3,6 +3,7 @@ import type { MixerState, StripConfig } from "../mixer/types";
 import { dispatch } from "../mixer/store";
 import {
   controllingDcas,
+  busMuteSources,
   displayedDb,
   effectiveMute,
   isSendMode,
@@ -19,6 +20,15 @@ export function ChannelStrip({
     send = isSendMode(state, config.id),
     muted = effectiveMute(state, config.id),
     selected = state.selectedId === config.id;
+  const mutedBuses = busMuteSources(state, config.id);
+  const busMuted = mutedBuses.length > 0;
+  const muteDescription = s.muted
+    ? "Muted on this channel"
+    : busMuted
+      ? `Muted by ${mutedBuses.map((bus) => bus.name).join(", ")} bus; channel mute is off`
+      : muted
+        ? "Muted by DCA; channel mute is off"
+        : "Channel mute is off";
   return (
     <section
       data-testid={`strip-${config.id}`}
@@ -100,21 +110,20 @@ export function ChannelStrip({
       ) : (
         <>
           <div className="strip-footer">
-            {muted && !s.muted
-              ? "DCA MUTE"
-              : config.kind === "dca"
-                ? "CONTROL GROUP"
-                : " "}
+            {busMuted && !s.muted
+              ? "BUS MUTE"
+              : muted && !s.muted
+                ? "DCA MUTE"
+                : config.kind === "dca"
+                  ? "CONTROL GROUP"
+                  : " "}
           </div>
           <button
-            className={`mute ${s.muted ? "active" : muted ? "inherited" : ""}`}
+            className={`mute ${s.muted ? "active" : busMuted ? "bus-inherited" : muted ? "inherited" : ""}`}
             aria-label={`Mute ${config.number}`}
             aria-pressed={s.muted}
-            title={
-              muted && !s.muted
-                ? "Muted by DCA; channel mute is off"
-                : undefined
-            }
+            aria-description={muteDescription}
+            title={muteDescription}
             onClick={() => dispatch({ type: "mute", id: config.id })}
           >
             MUTE

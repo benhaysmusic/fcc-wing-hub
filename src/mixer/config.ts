@@ -145,6 +145,25 @@ export const buses: StripConfig[] = busNames.map((name, i) => ({
     0, 0, 0, 0, -9.5, -8.2, -90, -29.8, 0, -18.6, 0.1, 0, 0, -0.6, 0, 0,
   ][i],
 }));
+// Explicit UI mute associations, independent of per-bus send levels.
+// Full audio routing is a separate future concern.
+export const busMuteMembers: Record<string, readonly string[]> = {
+  b1: ["ch1", "ch2", "ch3", "ch4"],
+  b2: ["ch8", "ch9", "ch10", "ch11", "ch12"],
+  b3: ["ch13", "ch14", "ch15", "ch16"],
+  b4: [
+    "ch18",
+    "ch19",
+    "ch20",
+    "ch21",
+    "ch22",
+    "ch23",
+    "ch24",
+    "ch25",
+    "ch26",
+    "ch27",
+  ],
+};
 // Read-only membership transcribed from the DCA overview screenshot.
 const memberships = [
   ["b1", "b6", "b7"],

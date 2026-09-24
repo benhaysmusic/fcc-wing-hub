@@ -562,6 +562,27 @@ button:disabled {
   border: 2px solid #f14e5b;
   color: #ff6977;
 }
+.mute.bus-inherited {
+  border-color: #f14e5b;
+  color: #fff0f1;
+  animation: bus-mute-pulse 2s ease-in-out infinite;
+}
+@keyframes bus-mute-pulse {
+  0%,
+  100% {
+    background-color: #522b32;
+  }
+  50% {
+    background-color: #bd414e;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mute.bus-inherited {
+    animation: none;
+    background: #522b32;
+    border-style: dashed;
+  }
+}
 .channel-strip.sending {
   border: 1px solid #00bf52;
 }

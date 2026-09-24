@@ -69,3 +69,7 @@ The available screen area is used for the console rather than reproducing the re
 3. Confirm the unshown send levels and channel-to-bus routing before any audio work.
 
 This repository is for FCC use. It has no deployment workflow or public hosting configuration.
+
+### Bus mute lights
+
+Muting a main group bus (VOX, GTRS, KEYS or DRUM) gently pulses its associated channels' mute buttons when those channels are not directly muted. Direct channel mute is always solid red and persists when the bus is unmuted. FX and IEM bus mutes do not change source-channel mute lights. Fader positions stay unchanged.

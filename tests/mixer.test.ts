@@ -5,11 +5,39 @@ import {
   displayedDb,
   effectiveDb,
   effectiveMute,
+  busMuteSources,
   dbToPosition,
   positionToDb,
 } from "../src/mixer/state";
-import { layers } from "../src/mixer/config";
+import { layers, busMuteMembers } from "../src/mixer/config";
 describe("FCC mixer invariants", () => {
+  it("indicates only the explicitly associated main-group channels", () => {
+    for (const [bus, members] of Object.entries(busMuteMembers)) {
+      const s = reducer(createInitialState(), { type: "mute", id: bus });
+      for (const channel of layers["CH 1–40"]) {
+        expect(
+          busMuteSources(s, channel.id).some((source) => source.id === bus),
+        ).toBe(members.includes(channel.id));
+      }
+    }
+  });
+  it("keeps bus mute indication independent of direct channel mute and fader levels", () => {
+    let s = createInitialState();
+    s = reducer(s, { type: "mute", id: "ch1" });
+    const level = s.strips.ch1.faderDb;
+    const sends = s.sends.ch1;
+    s = reducer(s, { type: "mute", id: "b1" });
+    expect(busMuteSources(s, "ch1").map((bus) => bus.id)).toEqual(["b1"]);
+    expect(s.strips.ch1.muted).toBe(false);
+    expect(s.strips.ch1.faderDb).toBe(level);
+    expect(s.sends.ch1).toBe(sends);
+    s = reducer(s, { type: "mute", id: "ch1" });
+    s = reducer(s, { type: "mute", id: "b1" });
+    expect(busMuteSources(s, "ch1")).toEqual([]);
+    expect(s.strips.ch1.muted).toBe(true);
+    s = reducer(s, { type: "mute", id: "b9" });
+    expect(busMuteSources(s, "ch1")).toEqual([]);
+  });
   it("preserves normal faders and other buses during SOF edits", () => {
     let s = createInitialState();
     const original = s.strips.ch1.faderDb;

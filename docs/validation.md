@@ -12,3 +12,7 @@ Not validated: exact WING firmware behavior, full routing, DSP equivalence, real
 The standalone offline HTML export was also opened and its Sends on Faders interaction verified without page errors.
 
 Repository: `benhaysmusic/fcc-wing-hub`. Milestone 1 is prepared on `codex/console-ui` for review; no deployment is configured.
+
+## Main group bus mute update
+
+Eight state tests and three browser tests cover the updated console, including independent local/bus mute state, group membership isolation, gently pulsing inherited bus mute, solid direct mute, bus release preserving direct mute, and the reduced-motion alternative. Bus mute indications do not change source fader levels or per-bus sends.
